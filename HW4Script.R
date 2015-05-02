@@ -47,5 +47,24 @@ oxygenDistribution=dbinom(0:sumofallAminoAcids["Oxygens"],sumofallAminoAcids["Ox
 #Plotting Oxygen Distribution
 plot(0:sumofallAminoAcids["Oxygens"],oxygenDistribution,type="h",main="Oxygen Bionomial Probability Distribution", ylab="Probability", xlab="Number of O-18s")
 
+#Taking the outer product of the two distributions to get the join distribution for all possible combinations of oxygen and carbon atoms
+combinedMatrix=outer(carbonDistribution,oxygenDistribution,FUN="*")
 
+#Total Mass of Carbon atoms in the input peptide can also vary, the variation can be found out as follows:
 
+carbonMasses=seq(12*sumofallAminoAcids["Carbons"],13*sumofallAminoAcids["Carbons"],by=1)
+oxygenMasses=seq(16*sumofallAminoAcids["Oxygens"],18*sumofallAminoAcids["Oxygens"],by=2)
+
+#Taking outer sum of the total possible carbon and oxygen Masses
+combinedMasses=outer(carbonMasses,oxygenMasses,FUN="+")
+
+#Adding masses for Hydrogen, Nitrogen and Sulphur
+
+massToAdd=1*sumofallAminoAcids["Hydrogens"]+14*sumofallAminoAcids["Nitrogens"]+32*sumofallAminoAcids["Sulphurs"]
+
+#New adjusted Masses:
+combinedMasses=combinedMasses+massToAdd
+
+uniqueMasses=unique(as.numeric(combinedMasses))
+print(uniqueMasses)
+#The objective now is calculate the probability of occurance of these unique masses from the combinedProbability Distribution
