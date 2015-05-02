@@ -1,5 +1,5 @@
 input="SLAMMER"
-#Each amino acid is stored
+#Source of data: http://www.bmrb.wisc.edu/ref_info/aadata.dat
 atomdata=read.csv("atomicfrequencies.txt", header=FALSE)
 #Extracting Relevant Data
 atomdata=atomdata[,c(1,3,12,13,14,15,16)]
@@ -68,3 +68,23 @@ combinedMasses=combinedMasses+massToAdd
 uniqueMasses=unique(as.numeric(combinedMasses))
 print(uniqueMasses)
 #The objective now is calculate the probability of occurance of these unique masses from the combinedProbability Distribution
+
+probabilitiesForUniqueMasses=sapply(uniqueMasses,function(mass){
+  #Getting Logical indexes from the Mass table for using with the probability Distribution table
+  logicalIndexesForDistribution=(combinedMasses==mass);
+  massProbabilities=combinedMatrix[logicalIndexesForDistribution]
+  
+  #Returing total probabilty for each mass
+  return(sum(massProbabilities))
+});
+
+print("Ordered Probabilties for Masses:")
+print(probabilitiesForUniqueMasses)
+pdf("Problem1AFigure.pdf")
+plot(uniqueMasses,probabilitiesForUniqueMasses,type='h',xlab="Mass",ylab="Probability of Occurance",main="Mass Spectrum for Part A")
+sink("Problem1AIsotopeProfile.txt")
+print("Isotope Profile for 5 lowest masses P0,P1,...P4");
+print(probabilitiesForUniqueMasses[1:5])
+sink()
+unlink("Problem1AIsotopeProfile.txt")
+dev.off()
